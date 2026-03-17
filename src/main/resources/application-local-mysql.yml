@@ -1,5 +1,8 @@
 # 로컬에서 NAS MySQL(my_new_project_db) 연결
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
     url: jdbc:mysql://125.141.20.218:3306/my_new_project_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: hyunchang88
@@ -9,6 +12,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
     show-sql: true
   h2:
     console:

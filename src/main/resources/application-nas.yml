@@ -1,6 +1,9 @@
 # NAS 배포용 설정
 
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
     url: jdbc:mysql://125.141.20.218:3306/my_new_project_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: hyunchang88
@@ -10,6 +13,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
     show-sql: false
   h2:
     console:

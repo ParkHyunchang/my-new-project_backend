@@ -1,10 +1,14 @@
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
     url: jdbc:mysql://db:3306/my_new_project_db?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    defer-datasource-initialization: true
     show-sql: true
 
 server:
