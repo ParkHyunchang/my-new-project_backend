@@ -20,29 +20,35 @@ Spring Boot 3 기반 백엔드 API 서버입니다.
 java -version
 ```
 
-> 로컬 환경은 H2 인메모리 DB를 사용하므로 **MySQL 설치 불필요**합니다.
+### 실행 (2가지)
 
-### 실행
+| 구분 | DB | 명령어 | 비고 |
+|------|-----|--------|------|
+| **① H2 인메모리** | 메모리 DB (재시작 시 초기화) | `./mvnw spring-boot:run` | MySQL 설치 불필요, 빠른 테스트용 |
+| **② NAS MySQL** | 실제 DB (my_new_project_db) | `./mvnw spring-boot:run "-Dspring-boot.run.profiles=local-mysql"` | NAS와 같은 네트워크 필요 |
 
 ```bash
-# Maven Wrapper 사용 (권장)
+# ① H2 인메모리 (기본)
 ./mvnw spring-boot:run
 
-# 또는 Maven 직접 사용
-mvn spring-boot:run
+# ② NAS MySQL 연결 (PowerShell)
+./mvnw spring-boot:run "-Dspring-boot.run.profiles=local-mysql"
+
+# ② NAS MySQL 연결 (CMD / Bash)
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local-mysql
 ```
 
 서버가 실행되면 [http://localhost:3210](http://localhost:3210) 에서 API 응답을 확인할 수 있습니다.
 
-### H2 콘솔 (로컬 DB 확인)
+### H2 콘솔 (①번 실행 시)
 
-로컬 실행 중 브라우저에서 [http://localhost:3210/h2-console](http://localhost:3210/h2-console) 접속
+[http://localhost:3210/h2-console](http://localhost:3210/h2-console) 접속
 
-| 항목 | 값 |
-|------|-----|
+| 항목     | 값                   |
+| -------- | -------------------- |
 | JDBC URL | `jdbc:h2:mem:testdb` |
-| Username | `sa` |
-| Password | (없음, 빈칸) |
+| Username | `sa`                 |
+| Password | (없음, 빈칸)         |
 
 ### 빌드
 
@@ -54,27 +60,30 @@ mvn spring-boot:run
 
 ## 환경별 프로파일
 
-| 프로파일 | DB | 실행 조건 |
-|----------|-----|----------|
-| `local` (기본) | H2 인메모리 | 로컬 개발 |
-| `docker` | MySQL 8.0 | Docker Compose |
+| 프로파일       | DB                              | 용도                       |
+| -------------- | ------------------------------- | -------------------------- |
+| `local`        | H2 인메모리                     | 로컬 개발 (DB 없이 테스트) |
+| `local-mysql`  | NAS MySQL (125.141.20.218:3306) | 로컬에서 NAS DB 작업       |
+| `docker`       | MySQL 8.0 (Docker)              | NAS Docker 배포            |
+| `nas`          | MySQL 8.0 (NAS)                 | NAS 직접 실행              |
 
-## Docker로 실행 (MySQL 포함)
+## Docker로 실행 (NAS 배포)
 
-`.env` 파일을 먼저 생성하세요:
+`/volume1/docker/my-new-project_backend/` 경로에 `.env` 파일 생성:
 
 ```env
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=new_project_db
-MYSQL_USER=myuser
-MYSQL_PASSWORD=mypassword
+BACKEND_IMAGE=ghcr.io/parkhyunchang/my-new-project_backend:latest
+MYSQL_ROOT_PASSWORD=gusckd88!
+MYSQL_DATABASE=my_new_project_db
+MYSQL_USER=hyunchang88
+MYSQL_PASSWORD=gusckd88!
 ```
 
 ```bash
 docker-compose up -d
 ```
 
-| 서비스 | 포트 |
-|--------|------|
+| 서비스      | 포트 |
+| ----------- | ---- |
 | Backend API | 3210 |
-| MySQL | 3316 |
+| MySQL       | 3306 |
