@@ -24,8 +24,8 @@ java -version
 
 | 구분 | DB | 명령어 | 비고 |
 |------|-----|--------|------|
-| **① H2 인메모리** | 메모리 DB (재시작 시 초기화) | `./mvnw spring-boot:run` | MySQL 설치 불필요, 빠른 테스트용 |
-| **② NAS MySQL** | 실제 DB (my_new_project_db) | `./mvnw spring-boot:run "-Dspring-boot.run.profiles=local-mysql"` | NAS와 같은 네트워크 필요 |
+| **① H2 인메모리** | 메모리 DB (재시작 시 초기화) | `./mvnw spring-boot:run` | MySQL 설치 불필요. 시드 사용자는 `SEED_DEFAULT_USERNAME`, `SEED_DEFAULT_PASSWORD` 환경 변수로 설정 |
+| **② NAS MySQL** | 실제 DB (my_new_project_db) | `./mvnw spring-boot:run "-Dspring-boot.run.profiles=local-mysql"` | NAS와 같은 네트워크 필요. 시드 사용자는 `.env` 또는 환경 변수로 설정 |
 
 ```bash
 # ① H2 인메모리 (기본)
@@ -33,12 +33,23 @@ java -version
 
 # ② NAS MySQL 연결 (PowerShell)
 ./mvnw spring-boot:run "-Dspring-boot.run.profiles=local-mysql"
+mvn spring-boot:run "-Dspring-boot.run.profiles=local-mysql"
 
 # ② NAS MySQL 연결 (CMD / Bash)
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local-mysql
+mvn spring-boot:run -Dspring-boot.run.profiles=local-mysql
 ```
 
 서버가 실행되면 [http://localhost:3210](http://localhost:3210) 에서 API 응답을 확인할 수 있습니다.
+
+**시드 사용자 설정 (로컬)**: `.env` 파일을 만들고, 실행 전에 환경 변수로 로드하거나 IDE에서 설정하세요.
+
+```powershell
+# PowerShell 예시
+$env:SEED_DEFAULT_USERNAME="your_username"
+$env:SEED_DEFAULT_PASSWORD="your_password"
+mvn spring-boot:run "-Dspring-boot.run.profiles=local-mysql"
+```
 
 ### H2 콘솔 (①번 실행 시)
 
@@ -69,15 +80,22 @@ java -version
 
 ## Docker로 실행 (NAS 배포)
 
-`/volume1/docker/my-new-project_backend/` 경로에 `.env` 파일 생성:
+`/volume1/docker/my-new-project_backend/` 경로에 `.env` 파일 생성 (`.env.example` 참고):
 
 ```env
 BACKEND_IMAGE=ghcr.io/parkhyunchang/my-new-project_backend:latest
-MYSQL_ROOT_PASSWORD=gusckd88!
+MYSQL_ROOT_PASSWORD=your_password
 MYSQL_DATABASE=my_new_project_db
-MYSQL_USER=hyunchang88
-MYSQL_PASSWORD=gusckd88!
+MYSQL_USER=your_db_user
+MYSQL_PASSWORD=your_db_password
+
+# 시드 사용자 (첫 실행 시 users 테이블에 생성되는 기본 로그인 계정)
+SEED_DEFAULT_USERNAME=your_username
+SEED_DEFAULT_PASSWORD=your_password
 ```
+
+> ⚠️ `.env`는 Git에 올라가지 않습니다. `.env.example`을 복사해 `.env`를 만들고 실제 값을 입력하세요.  
+> 💡 `mvn spring-boot:run` 실행 시에도 `.env`가 자동으로 로드됩니다 (spring-dotenv).
 
 ```bash
 docker-compose up -d

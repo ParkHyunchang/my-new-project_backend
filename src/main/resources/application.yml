@@ -1,3 +1,9 @@
+# 시드 사용자 (환경 변수로 설정, .env에서 로드)
+# SEED_DEFAULT_USERNAME, SEED_DEFAULT_PASSWORD
+seed:
+  default-username: ${SEED_DEFAULT_USERNAME:-}
+  default-password: ${SEED_DEFAULT_PASSWORD:-}
+
 spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
