@@ -22,6 +22,9 @@ public class ChatSession {
     @Column(length = 100)
     private String username;
 
+    @Column(name = "anon_id", length = 100)
+    private String anonId;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -31,9 +34,10 @@ public class ChatSession {
     @Column(length = 100)
     private String title;
 
-    public ChatSession(String sessionKey, String username) {
+    public ChatSession(String sessionKey, String username, String anonId) {
         this.sessionKey = sessionKey;
         this.username = username;
+        this.anonId = anonId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

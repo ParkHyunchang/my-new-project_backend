@@ -9,4 +9,5 @@ public class ChatRequest {
     private String sessionKey;
     private String content;
     private String username;
+    private String anonId;
 }

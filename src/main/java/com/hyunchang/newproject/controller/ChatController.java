@@ -5,6 +5,7 @@ import com.hyunchang.newproject.dto.ChatRequest;
 import com.hyunchang.newproject.dto.ChatResponse;
 import com.hyunchang.newproject.entity.ChatRecord;
 import com.hyunchang.newproject.entity.ChatSession;
+import com.hyunchang.newproject.exception.ClaudeApiException;
 import com.hyunchang.newproject.service.ChatHistoryService;
 import com.hyunchang.newproject.service.ClaudeService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class ChatController {
                 : request.getContent();
         log.info("[채팅] user={}, session={}, message={}", request.getUsername(), sessionKey, preview);
 
-        ChatSession session = chatHistoryService.getOrCreateSession(sessionKey, request.getUsername());
+        ChatSession session = chatHistoryService.getOrCreateSession(sessionKey, request.getUsername(), request.getAnonId());
 
         List<ChatRecord> history = chatHistoryService.getMessages(session);
 
@@ -47,12 +48,16 @@ public class ChatController {
         history.forEach(r -> messages.add(new ChatMessage(r.getRole(), r.getContent())));
         messages.add(new ChatMessage("user", request.getContent()));
 
-        String response = claudeService.chat(messages);
-
-        chatHistoryService.saveMessage(session, "user", request.getContent());
-        chatHistoryService.saveMessage(session, "assistant", response);
-
-        return ResponseEntity.ok(new ChatResponse(response));
+        try {
+            String response = claudeService.chat(messages);
+            chatHistoryService.saveMessage(session, "user", request.getContent());
+            chatHistoryService.saveMessage(session, "assistant", response);
+            return ResponseEntity.ok(new ChatResponse(response));
+        } catch (ClaudeApiException e) {
+            // 유저 메시지는 저장하되, 에러 메시지는 DB에 저장하지 않음
+            chatHistoryService.saveMessage(session, "user", request.getContent());
+            return ResponseEntity.ok(new ChatResponse(e.getUserMessage()));
+        }
     }
 
     @GetMapping("/chat/history/{sessionKey}")
@@ -69,5 +74,10 @@ public class ChatController {
     @PostMapping("/chat/sessions/by-keys")
     public List<ChatHistoryService.SessionSummaryDto> getSessionsByKeys(@RequestBody List<String> keys) {
         return chatHistoryService.getSessionsByKeys(keys);
+    }
+
+    @GetMapping("/chat/sessions/anon/{anonId}")
+    public List<ChatHistoryService.SessionSummaryDto> getAnonSessions(@PathVariable String anonId) {
+        return chatHistoryService.getSessionsByAnonId(anonId);
     }
 }

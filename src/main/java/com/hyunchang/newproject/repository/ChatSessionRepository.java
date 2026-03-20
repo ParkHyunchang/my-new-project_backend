@@ -11,5 +11,6 @@ public interface ChatSessionRepository extends JpaRepository<ChatSession, Long> 
     Optional<ChatSession> findBySessionKey(String sessionKey);
     List<ChatSession> findAllByOrderByUpdatedAtDesc();
     List<ChatSession> findByUsernameOrderByUpdatedAtDesc(String username);
+    List<ChatSession> findByAnonIdOrderByUpdatedAtDesc(String anonId);
     List<ChatSession> findBySessionKeyInOrderByUpdatedAtDesc(Collection<String> sessionKeys);
 }

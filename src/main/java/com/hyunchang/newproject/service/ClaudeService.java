@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyunchang.newproject.dto.ChatMessage;
+import com.hyunchang.newproject.exception.ClaudeApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,10 +55,10 @@ public class ClaudeService {
             String errorType = parseErrorType(e.getResponseBodyAsString());
             String message = toKoreanMessage(errorType, e.getStatusCode().value());
             log.warn("[Claude API 오류] status={}, type={}, message={}", e.getStatusCode().value(), errorType, message);
-            return message;
+            throw new ClaudeApiException(message);
         } catch (ResourceAccessException e) {
             log.warn("[Claude API 오류] 네트워크 연결 실패: {}", e.getMessage());
-            return "[오류] Claude 서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.";
+            throw new ClaudeApiException("[오류] Claude 서버에 연결할 수 없습니다. 네트워크 상태를 확인해주세요.");
         }
     }
 
