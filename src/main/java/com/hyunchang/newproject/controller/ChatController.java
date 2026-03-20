@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -29,13 +30,16 @@ public class ChatController {
 
     @PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
+        String sessionKey = (request.getSessionKey() != null && !request.getSessionKey().isBlank())
+                ? request.getSessionKey()
+                : UUID.randomUUID().toString();
+
         String preview = request.getContent() != null && request.getContent().length() > 50
                 ? request.getContent().substring(0, 50) + "..."
                 : request.getContent();
-        log.info("[채팅] user={}, session={}, message={}", request.getUsername(), request.getSessionKey(), preview);
+        log.info("[채팅] user={}, session={}, message={}", request.getUsername(), sessionKey, preview);
 
-        ChatSession session = chatHistoryService.getOrCreateSession(
-                request.getSessionKey(), request.getUsername());
+        ChatSession session = chatHistoryService.getOrCreateSession(sessionKey, request.getUsername());
 
         List<ChatRecord> history = chatHistoryService.getMessages(session);
 
