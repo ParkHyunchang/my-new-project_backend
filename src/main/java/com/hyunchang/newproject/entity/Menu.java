@@ -23,9 +23,25 @@ public class Menu {
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder = 0;
 
-    public Menu(String name, String path, Integer sortOrder) {
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean visible = true;
+
+    @Column(length = 100)
+    private String component;
+
+    public Menu(String name, String path, Integer sortOrder, String component) {
         this.name = name;
         this.path = path;
         this.sortOrder = sortOrder != null ? sortOrder : 0;
+        this.visible = true;
+        this.component = component;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setComponent(String component) {
+        this.component = component;
     }
 }

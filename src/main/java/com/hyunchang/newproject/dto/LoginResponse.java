@@ -10,12 +10,13 @@ public class LoginResponse {
     private boolean success;
     private String username;
     private String message;
+    private String token;
 
-    public static LoginResponse success(String username) {
-        return new LoginResponse(true, username, null);
+    public static LoginResponse success(String username, String token) {
+        return new LoginResponse(true, username, null, token);
     }
 
     public static LoginResponse fail(String message) {
-        return new LoginResponse(false, null, message);
+        return new LoginResponse(false, null, message, null);
     }
 }

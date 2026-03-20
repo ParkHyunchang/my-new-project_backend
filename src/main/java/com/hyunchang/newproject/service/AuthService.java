@@ -14,14 +14,17 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AdminSessionService adminSessionService;
     private final String seedDefaultUsername;
     private final String seedDefaultPassword;
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       AdminSessionService adminSessionService,
                        @Value("${seed.default-username:}") String seedDefaultUsername,
                        @Value("${seed.default-password:}") String seedDefaultPassword) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.adminSessionService = adminSessionService;
         this.seedDefaultUsername = seedDefaultUsername != null ? seedDefaultUsername : "";
         this.seedDefaultPassword = seedDefaultPassword != null ? seedDefaultPassword : "";
     }
@@ -41,7 +44,8 @@ public class AuthService {
             return LoginResponse.fail("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        return LoginResponse.success(user.getUsername());
+        String token = adminSessionService.createToken(user.getUsername());
+        return LoginResponse.success(user.getUsername(), token);
     }
 
     public void seedDefaultUserIfEmpty() {
