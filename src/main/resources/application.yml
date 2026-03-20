@@ -4,6 +4,9 @@ seed:
   default-username: ${SEED_DEFAULT_USERNAME:-}
   default-password: ${SEED_DEFAULT_PASSWORD:-}
 
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:-}
+
 spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
