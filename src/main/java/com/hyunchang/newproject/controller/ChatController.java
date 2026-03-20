@@ -7,12 +7,14 @@ import com.hyunchang.newproject.entity.ChatRecord;
 import com.hyunchang.newproject.entity.ChatSession;
 import com.hyunchang.newproject.service.ChatHistoryService;
 import com.hyunchang.newproject.service.ClaudeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class ChatController {
@@ -27,6 +29,11 @@ public class ChatController {
 
     @PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
+        String preview = request.getContent() != null && request.getContent().length() > 50
+                ? request.getContent().substring(0, 50) + "..."
+                : request.getContent();
+        log.info("[채팅] user={}, session={}, message={}", request.getUsername(), request.getSessionKey(), preview);
+
         ChatSession session = chatHistoryService.getOrCreateSession(
                 request.getSessionKey(), request.getUsername());
 
@@ -51,6 +58,7 @@ public class ChatController {
 
     @GetMapping("/chat/sessions/{username}")
     public List<ChatHistoryService.SessionSummaryDto> getSessions(@PathVariable String username) {
+        log.info("[채팅세션 조회] user={}", username);
         return chatHistoryService.getSessionsByUsername(username);
     }
 

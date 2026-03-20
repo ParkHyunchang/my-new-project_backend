@@ -1,12 +1,14 @@
 package com.hyunchang.newproject.controller;
 
 import com.hyunchang.newproject.repository.MenuRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/menus")
 public class AdminMenuController {
@@ -31,6 +33,7 @@ public class AdminMenuController {
                     if (body.visible() != null) menu.setVisible(body.visible());
                     if (body.component() != null) menu.setComponent(body.component());
                     menuRepository.save(menu);
+                    log.info("[관리자] 메뉴 수정, id={}, name={}, visible={}, component={}", menu.getId(), menu.getName(), menu.isVisible(), menu.getComponent());
                     return ResponseEntity.ok(new AdminMenuDto(menu.getId(), menu.getName(), menu.getPath(), menu.getSortOrder(), menu.isVisible(), menu.getComponent()));
                 })
                 .orElse(ResponseEntity.notFound().build());
